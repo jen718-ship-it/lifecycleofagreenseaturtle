@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Life Cycle of a Green Sea Turtle</title>
+  <style>
+    /* Font Definitions */
+    @font-face {
+      font-family: 'Londrina Solid';
+      src: url('LondrinaSolid-Regular.otf') format('opentype');
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Enforce Landscape Lock styling */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
+      background: linear-gradient(135deg, #D1E564 0%, #C0D35A 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      color: #1B3B00;
+    }
+
+    /* Cover Screen */
+    .cover-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      background: linear-gradient(rgba(209, 229, 100, 0.85), rgba(192, 211, 90, 0.85)),
+                  url('4 adult turtle.png') center/contain no-repeat;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .cover-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .cover-title {
+      font-family: 'Londrina Solid', 'Comic Sans MS', cursive, sans-serif;
+      font-size: 54px;
+      color: #688712;
+      line-height: 1.1;
+      margin: 0 0 20px 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 3px 3px 0px #A3B648, 0px 0px 15px rgba(255,255,255,0.8);
+      max-width: 900px;
+    }
+
+    .start-btn {
+      margin-top: 15px;
+      padding: 14px 45px;
+      background: linear-gradient(to bottom, #688712, #55700e);
+      color: #ffffff;
+      border: 3px solid #D1E564;
+      border-radius: 35px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 26px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(119, 74, 25, 0.3);
+      transition: all 0.2s;
+    }
+
+    .start-btn:hover {
+      background: linear-gradient(to bottom, #774A19, #5c3913);
+      transform: scale(1.05);
+    }
+
+    /* Main Container */
+    .container {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 12px 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(119, 74, 25, 0.2);
+      width: 95vw;
+      max-width: 1200px;
+      height: 92vh;
+      max-height: 700px;
+      position: relative;
+      z-index: 1;
+      border: 4px solid #A3B648;
+    }
+
+    /* Left Section: Board */
+    .board {
+      flex: 1.3;
+      border: 4px solid #688712;
+      padding: 12px 15px;
+      border-radius: 16px;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 0 10px rgba(104, 135, 18, 0.1);
+    }
+
+    .header-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .title {
+      font-family: 'Londrina Solid', 'Comic Sans MS', cursive, sans-serif;
+      font-size: 26px;
+      color: #688712;
+      line-height: 1;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header-img {
+      width: 55px;
+      height: auto;
+    }
+
+    .instructions {
+      font-size: 14px;
+      color: #1B3B00;
+      margin: 2px 0;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* Expanded Diagram Area for Cleared Overlaps */
+    .cycle-container {
+      position: relative;
+      width: 290px;
+      height: 290px;
+      margin: 2px 0;
+    }
+
+    .dropzone-wrapper {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80px;
+      z-index: 2;
+    }
+
+    .dropzone {
+      width: 68px;
+      height: 68px;
+      border: 2px dashed #1B3B00;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 24px;
+      font-weight: bold;
+      color: #688712;
+      background-color: #D1E564;
+      overflow: hidden;
+      padding: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .dropzone.hovered {
+      background-color: #C0D35A;
+      border-color: #688712;
+      transform: scale(1.08);
+    }
+
+    .dropzone.correct {
+      border: 2px dashed #688712;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(104, 135, 18, 0.3);
+    }
+
+    .dropzone.wrong-shake {
+      animation: shake 0.4s ease-in-out;
+      border-color: #e53935;
+      background-color: #FFEBEE;
+    }
+
+    /* Non-overlapping Label Under Dropped Image */
+    .dropzone-label {
+      margin-top: 3px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #774A19;
+      text-align: center;
+      line-height: 1.1;
+      white-space: nowrap;
+      min-height: 14px;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .dropzone img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    /* Precise Arrow Coordinates with Zero Text Overlap */
+    .arrow {
+      position: absolute;
+      font-size: 22px;
+      color: #688712;
+      font-weight: bold;
+      z-index: 1;
+    }
+    .arrow-1-2 { top: 22px; right: 55px; transform: rotate(35deg); }
+    .arrow-2-3 { bottom: 55px; right: 55px; transform: rotate(125deg); }
+    .arrow-3-4 { bottom: 22px; left: 55px; transform: rotate(-145deg); }
+    .arrow-4-1 { top: 22px; left: 55px; transform: rotate(-35deg); }
+
+    .wrapper-1 { top: 0px; left: 105px; }
+    .wrapper-2 { top: 90px; right: 5px; }
+    .wrapper-3 { bottom: 0px; left: 105px; }
+    .wrapper-4 { top: 90px; left: 5px; }
+
+    /* Description Table */
+    .description-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #688712;
+    }
+
+    .description-table td {
+      border-bottom: 1px solid #A3B648;
+      padding: 3px 10px;
+      font-size: 13px;
+      height: 36px;
+      vertical-align: middle;
+    }
+
+    .description-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .description-table td.num {
+      width: 30px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #688712;
+      border-right: 2px solid #688712;
+    }
+
+    .text-dropzone {
+      background-color: #FAFAFA;
+      color: #1B3B00;
+      transition: background-color 0.2s;
+    }
+
+    .text-dropzone.hovered {
+      background-color: #D1E564;
+    }
+
+    .text-dropzone.correct {
+      background-color: #774A19;
+      color: #FFFFFF;
+      font-weight: bold;
+    }
+
+    /* Right Section: Item Sidebar */
+    .sidebar {
+      flex: 0.9;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* Image Pool with Labels */
+    .image-pool {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: flex-start;
+      gap: 6px;
+      background: #D1E564;
+      padding: 8px 6px;
+      border-radius: 12px;
+      border: 2px dashed #688712;
+      min-height: 105px;
+    }
+
+    .draggable-img-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .draggable-img-wrapper {
+      width: 56px;
+      height: 56px;
+      border: 2px dashed #1B3B00;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #FFFFFF;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+      padding: 4px;
+    }
+
+    .draggable-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .img-label {
+      margin-top: 3px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000000;
+      text-align: center;
+      max-width: 70px;
+      line-height: 1.1;
+    }
+
+    .text-pool {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #D1E564;
+      padding: 12px;
+      border-radius: 12px;
+      border: 2px dashed #688712;
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    /* Brown Style Text Elements */
+    .draggable-text {
+      background-color: #774A19;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #FFFFFF;
+      border: 2px solid #5C3913;
+      cursor: grab;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.18);
+      touch-action: none;
+      line-height: 1.3;
+    }
+
+    /* Dragging Element Visual State */
+    .dragging {
+      opacity: 0.95 !important;
+      z-index: 1000 !important;
+      pointer-events: none;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3) !important;
+      transform: scale(1.02);
+    }
+
+    .reset-btn {
+      padding: 8px 20px;
+      background: linear-gradient(to bottom, #688712, #55700e);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      align-self: center;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s;
+    }
+
+    .reset-btn:hover {
+      background: #774A19;
+    }
+
+    /* Final Presentation Overlay */
+    .oral-presentation-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(27, 59, 0, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .oral-presentation-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .presentation-card {
+      background: #ffffff;
+      border: 6px solid #688712;
+      border-radius: 25px;
+      padding: 25px 35px;
+      width: 90vw;
+      max-width: 950px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .oral-presentation-overlay.show .presentation-card {
+      transform: scale(1);
+    }
+
+    .presentation-header {
+      font-family: 'Londrina Solid', 'Comic Sans MS', cursive, sans-serif;
+      font-size: 44px;
+      color: #688712;
+      margin: 0 0 15px 0;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0px #D1E564;
+    }
+
+    .presentation-content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 30px;
+      width: 100%;
+    }
+
+    .presentation-diagram {
+      position: relative;
+      width: 270px;
+      height: 270px;
+      flex-shrink: 0;
+    }
+
+    .presentation-diagram .dropzone {
+      width: 62px;
+      height: 62px;
+      border: 2px dashed #1B3B00;
+      background: #ffffff;
+      padding: 3px;
+    }
+
+    .presentation-textbox {
+      flex: 1;
+      background: #D1E564;
+      border: 3px solid #688712;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .presentation-paragraph {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #1B3B00;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .close-presentation-btn {
+      margin-top: 20px;
+      padding: 10px 30px;
+      background: #688712;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-presentation-btn:hover {
+      background: #774A19;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Minimalist Cover Screen -->
+<div class="cover-screen" id="coverScreen" onclick="startGame()">
+  <h1 class="cover-title">The Life Cycle of a Green Sea Turtle</h1>
+  <button class="start-btn">START</button>
+</div>
+
+<!-- Main Game Container -->
+<div class="container">
+  <!-- Left Column: Activity Board -->
+  <div class="board">
+    <div class="header-container">
+      <h1 class="title">The Life Cycle of<br>a Green Sea Turtle</h1>
+      <img src="4 adult turtle.png" alt="Turtle" class="header-img">
+    </div>
+
+    <div class="instructions">Drag the pictures and sentences to the correct places.</div>
+
+    <!-- Cycle Diagram -->
+    <div class="cycle-container">
+      <div class="arrow arrow-1-2">➔</div>
+      <div class="arrow arrow-2-3">➔</div>
+      <div class="arrow arrow-3-4">➔</div>
+      <div class="arrow arrow-4-1">➔</div>
+
+      <div class="dropzone-wrapper wrapper-1">
+        <div class="dropzone dz-1" data-step="1" data-type="img">1</div>
+        <div class="dropzone-label" id="label-dz-1"></div>
+      </div>
+
+      <div class="dropzone-wrapper wrapper-2">
+        <div class="dropzone dz-2" data-step="2" data-type="img">2</div>
+        <div class="dropzone-label" id="label-dz-2"></div>
+      </div>
+
+      <div class="dropzone-wrapper wrapper-3">
+        <div class="dropzone dz-3" data-step="3" data-type="img">3</div>
+        <div class="dropzone-label" id="label-dz-3"></div>
+      </div>
+
+      <div class="dropzone-wrapper wrapper-4">
+        <div class="dropzone dz-4" data-step="4" data-type="img">4</div>
+        <div class="dropzone-label" id="label-dz-4"></div>
+      </div>
+    </div>
+
+    <!-- Sentence Matching Table -->
+    <table class="description-table">
+      <tr>
+        <td class="num">1</td>
+        <td class="text-dropzone" data-step="1" data-type="text"></td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td class="text-dropzone" data-step="2" data-type="text"></td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td class="text-dropzone" data-step="3" data-type="text"></td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td class="text-dropzone" data-step="4" data-type="text"></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Right Column: Item Sidebar -->
+  <div class="sidebar">
+    <div class="image-pool">
+      <div class="draggable-img-item" id="img-2" data-step="2" data-type="img" data-label="baby turtle">
+        <div class="draggable-img-wrapper">
+          <img src="2 baby turtle.png" alt="baby turtle">
+        </div>
+        <span class="img-label">baby turtle</span>
+      </div>
+
+      <div class="draggable-img-item" id="img-1" data-step="1" data-type="img" data-label="egg">
+        <div class="draggable-img-wrapper">
+          <img src="1 eggs.png" alt="egg">
+        </div>
+        <span class="img-label">egg</span>
+      </div>
+
+      <div class="draggable-img-item" id="img-3" data-step="3" data-type="img" data-label="young turtle">
+        <div class="draggable-img-wrapper">
+          <img src="3 young turtle.png" alt="young turtle">
+        </div>
+        <span class="img-label">young turtle</span>
+      </div>
+
+      <div class="draggable-img-item" id="img-4" data-step="4" data-type="img" data-label="adult turtle">
+        <div class="draggable-img-wrapper">
+          <img src="4 adult turtle.png" alt="adult turtle">
+        </div>
+        <span class="img-label">adult turtle</span>
+      </div>
+    </div>
+
+    <div class="text-pool">
+      <div class="draggable-text" id="text-3" data-step="3" data-type="text">
+        Baby turtles grow into young turtles.
+      </div>
+      <div class="draggable-text" id="text-2" data-step="2" data-type="text">
+        The eggs hatch, and baby turtles come out.
+      </div>
+      <div class="draggable-text" id="text-1" data-step="1" data-type="text">
+        A mother turtle lays eggs in the sand.
+      </div>
+      <div class="draggable-text" id="text-4" data-step="4" data-type="text">
+        After many years, young turtles become adult turtles.
+      </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetActivity()">Reset Activity</button>
+  </div>
+</div>
+
+<!-- Presentation Modal -->
+<div class="oral-presentation-overlay" id="presentationOverlay">
+  <div class="presentation-card">
+    <h2 class="presentation-header">Good Job!</h2>
+    <div class="presentation-content">
+      <div class="presentation-diagram">
+        <div class="arrow arrow-1-2">➔</div>
+        <div class="arrow arrow-2-3">➔</div>
+        <div class="arrow arrow-3-4">➔</div>
+        <div class="arrow arrow-4-1">➔</div>
+
+        <div class="dropzone-wrapper wrapper-1">
+          <div class="dropzone dz-1"><img src="1 eggs.png" alt="Step 1"></div>
+          <div class="dropzone-label">egg</div>
+        </div>
+        <div class="dropzone-wrapper wrapper-2">
+          <div class="dropzone dz-2"><img src="2 baby turtle.png" alt="Step 2"></div>
+          <div class="dropzone-label">baby turtle</div>
+        </div>
+        <div class="dropzone-wrapper wrapper-3">
+          <div class="dropzone dz-3"><img src="3 young turtle.png" alt="Step 3"></div>
+          <div class="dropzone-label">young turtle</div>
+        </div>
+        <div class="dropzone-wrapper wrapper-4">
+          <div class="dropzone dz-4"><img src="4 adult turtle.png" alt="Step 4"></div>
+          <div class="dropzone-label">adult turtle</div>
+        </div>
+      </div>
+
+      <div class="presentation-textbox">
+        <p class="presentation-paragraph">
+          A mother turtle lays eggs in the sand. The eggs hatch, and baby turtles come out. Baby turtles grow into young turtles. After many years, young turtles become adult turtles.
+        </p>
+      </div>
+    </div>
+    <button class="close-presentation-btn" onclick="closePresentation()">Play Again</button>
+  </div>
+</div>
+
+<script>
+  /* --- Audio Synthesizer --- */
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new AudioCtx();
+  }
+
+  function playSound(type) {
+    initAudio();
+    if (!audioCtx) return;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+
+    if (type === 'click') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(400, now);
+      osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } else if (type === 'correct') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.1);
+      osc.frequency.setValueAtTime(783.99, now + 0.2);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+      osc.start(now);
+      osc.stop(now + 0.4);
+    } else if (type === 'wrong') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.setValueAtTime(180, now + 0.15);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === 'fanfare') {
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const noteOsc = audioCtx.createOscillator();
+        const noteGain = audioCtx.createGain();
+        noteOsc.type = 'triangle';
+        noteOsc.frequency.setValueAtTime(freq, now + idx * 0.12);
+        noteGain.gain.setValueAtTime(0.2, now + idx * 0.12);
+        noteGain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.12 + 0.3);
+        noteOsc.connect(noteGain);
+        noteGain.connect(audioCtx.destination);
+        noteOsc.start(now + idx * 0.12);
+        noteOsc.stop(now + idx * 0.12 + 0.3);
+      });
+    }
+  }
+
+  function startGame() {
+    playSound('click');
+    document.getElementById('coverScreen').classList.add('hidden');
+  }
+
+  /* --- Drag and Drop Logic --- */
+  let activeElement = null;
+  let cloneElement = null;
+  let touchOffsetX = 0;
+  let touchOffsetY = 0;
+
+  const draggables = document.querySelectorAll('.draggable-img-item, .draggable-text');
+  const allDropzones = document.querySelectorAll('.board .dropzone, .text-dropzone');
+
+  draggables.forEach(item => {
+    item.addEventListener('pointerdown', onPointerDown);
+  });
+
+  function onPointerDown(e) {
+    if (e.button !== undefined && e.button !== 0) return;
+    playSound('click');
+
+    activeElement = e.currentTarget;
+    const rect = activeElement.getBoundingClientRect();
+    
+    touchOffsetX = e.clientX - rect.left;
+    touchOffsetY = e.clientY - rect.top;
+
+    cloneElement = activeElement.cloneNode(true);
+    cloneElement.classList.add('dragging');
+    cloneElement.style.position = 'fixed';
+    cloneElement.style.width = `${rect.width}px`;
+    cloneElement.style.height = `${rect.height}px`;
+    cloneElement.style.left = `${e.clientX - touchOffsetX}px`;
+    cloneElement.style.top = `${e.clientY - touchOffsetY}px`;
+    document.body.appendChild(cloneElement);
+
+    activeElement.style.opacity = '0.3';
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    if (!cloneElement) return;
+    
+    cloneElement.style.left = `${e.clientX - touchOffsetX}px`;
+    cloneElement.style.top = `${e.clientY - touchOffsetY}px`;
+
+    allDropzones.forEach(zone => zone.classList.remove('hovered'));
+    const zoneUnder = getDropzoneUnderPointer(e.clientX, e.clientY);
+    if (zoneUnder && zoneUnder.getAttribute('data-type') === activeElement.getAttribute('data-type')) {
+      zoneUnder.classList.add('hovered');
+    }
+  }
+
+  function onPointerUp(e) {
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+
+    if (!activeElement || !cloneElement) return;
+
+    allDropzones.forEach(zone => zone.classList.remove('hovered'));
+
+    const zone = getDropzoneUnderPointer(e.clientX, e.clientY);
+    const itemType = activeElement.getAttribute('data-type');
+    const itemStep = activeElement.getAttribute('data-step');
+
+    if (zone && zone.getAttribute('data-type') === itemType) {
+      const targetStep = zone.getAttribute('data-step');
+
+      if (targetStep === itemStep) {
+        playSound('correct');
+        zone.classList.add('correct');
+
+        if (itemType === 'img') {
+          zone.innerHTML = '';
+          zone.appendChild(activeElement.querySelector('img').cloneNode(true));
+          
+          /* Attach label below image in brown color */
+          const labelText = activeElement.getAttribute('data-label');
+          const labelDiv = document.getElementById(`label-dz-${targetStep}`);
+          if (labelDiv) {
+            labelDiv.textContent = labelText;
+          }
+        } else {
+          zone.textContent = activeElement.textContent.trim();
+        }
+
+        activeElement.style.display = 'none';
+        checkCompletion();
+      } else {
+        playSound('wrong');
+        triggerWrongAnimation(zone);
+      }
+    } else if (zone) {
+      playSound('wrong');
+    }
+
+    activeElement.style.opacity = '1';
+    if (cloneElement && cloneElement.parentNode) {
+      document.body.removeChild(cloneElement);
+    }
+    cloneElement = null;
+    activeElement = null;
+  }
+
+  function getDropzoneUnderPointer(x, y) {
+    if (cloneElement) cloneElement.style.display = 'none';
+    const elem = document.elementFromPoint(x, y);
+    if (cloneElement) cloneElement.style.display = '';
+    return elem ? elem.closest('.board .dropzone, .text-dropzone') : null;
+  }
+
+  function triggerWrongAnimation(zone) {
+    zone.classList.add('wrong-shake');
+    setTimeout(() => zone.classList.remove('wrong-shake'), 400);
+  }
+
+  function checkCompletion() {
+    const visibleDraggables = Array.from(draggables).filter(item => item.style.display !== 'none');
+    
+    if (visibleDraggables.length === 0) {
+      setTimeout(() => {
+        playSound('fanfare');
+        document.getElementById('presentationOverlay').classList.add('show');
+      }, 400);
+    }
+  }
+
+  function closePresentation() {
+    document.getElementById('presentationOverlay').classList.remove('show');
+    resetActivity();
+  }
+
+  function resetActivity() {
+    playSound('click');
+
+    const imgDropzones = document.querySelectorAll('.board .dropzone');
+    imgDropzones.forEach((zone, index) => {
+      zone.innerHTML = index + 1;
+      zone.classList.remove('correct');
+    });
+
+    const labels = document.querySelectorAll('.dropzone-label');
+    labels.forEach(lbl => {
+      lbl.textContent = '';
+    });
+
+    const textDropzones = document.querySelectorAll('.text-dropzone');
+    textDropzones.forEach(zone => {
+      zone.textContent = '';
+      zone.classList.remove('correct');
+    });
+
+    draggables.forEach(item => {
+      item.style.display = 'flex';
+      item.style.opacity = '1';
+    });
+  }
+</script>
+
+</body>
+</html>
